@@ -2,9 +2,12 @@ import argparse
 from embeddings import get_text_embedding, get_audio_embedding
 from search import search_embedding, build_index
 from dataset import load_and_preprocess_dataset
+from transformers import ClapModel, ClapProcessor
 
 # Load and preprocess the dataset
-dataset, index = load_and_preprocess_dataset()
+model = ClapModel.from_pretrained("laion/clap-htsat-unfused").to("cuda")
+processor = ClapProcessor.from_pretrained("laion/clap-htsat-unfused")
+dataset, index = load_and_preprocess_dataset(model, processor)
 
 # CLI implementation
 def main():
@@ -16,10 +19,10 @@ def main():
     # Check if input is text or a file path
     if args.input.endswith(".wav"):
         print(f"Processing audio file: {args.input}")
-        embedding = get_audio_embedding(args.input)
+        embedding = get_audio_embedding(args.input, model, processor)
     else:
         print(f"Processing text input: {args.input}")
-        embedding = get_text_embedding(args.input)
+        embedding = get_text_embedding(args.input, model, processor)
 
     distances, indices = search_embedding(embedding, index, args.top_n)
     print("\nTop matches:")

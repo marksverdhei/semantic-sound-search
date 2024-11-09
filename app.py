@@ -3,9 +3,23 @@ import numpy as np
 from src.embeddings import get_text_embedding, get_audio_embedding
 from src.search import search_embedding
 from src.dataset import load_and_preprocess_dataset
+from transformers import ClapModel, ClapProcessor
 
-# Load and preprocess the dataset
-dataset, index = load_and_preprocess_dataset()
+# Cache the model and processor loading
+@st.cache_resource
+def load_model_and_processor():
+    model = ClapModel.from_pretrained("laion/clap-htsat-unfused").to("cuda")
+    processor = ClapProcessor.from_pretrained("laion/clap-htsat-unfused")
+    return model, processor
+
+# Cache the dataset loading and preprocessing
+@st.cache_resource
+def load_dataset_and_index(_model, _processor):
+    return load_and_preprocess_dataset(_model, _processor)
+
+# Load model, processor, dataset, and index
+model, processor = load_model_and_processor()
+dataset, index = load_dataset_and_index(model, processor)
 
 st.title("Audio Semantic Search")
 
@@ -25,10 +39,10 @@ if st.button("Search"):
         # Process the uploaded audio file
         st.audio(uploaded_file)
         audio_bytes = uploaded_file.read()
-        embedding = get_audio_embedding(audio_bytes)
+        embedding = get_audio_embedding(audio_bytes, model, processor)
     elif query_text:
         # Process the text query
-        embedding = get_text_embedding(query_text)
+        embedding = get_text_embedding(query_text, model, processor)
     else:
         st.error("Please upload an audio file or enter a text query.")
         st.stop()
