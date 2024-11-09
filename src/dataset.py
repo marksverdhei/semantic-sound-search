@@ -2,8 +2,8 @@ import torch
 import torchaudio
 import numpy as np
 from datasets import load_dataset
-from embeddings import processor, model, TARGET_SAMPLE_RATE
-from search import build_index  # Fix the import statement
+from src.embeddings import processor, model, TARGET_SAMPLE_RATE
+from src.search import build_index
 
 def load_and_preprocess_dataset():
     # Load and preprocess a subset of the dataset for the demonstration
