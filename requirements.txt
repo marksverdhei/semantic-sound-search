@@ -1,1 +1,9 @@
+transformers
+datasets
+torch
+faiss-gpu
 streamlit
+scipy
+numpy==1.*
+librosa
+soundfile
