@@ -3,6 +3,8 @@ import soundfile as sf
 import torchaudio
 from transformers import ClapModel, ClapProcessor
 import numpy as np
+import io
+
 # Define target sample rate
 TARGET_SAMPLE_RATE = 48000
 
@@ -16,13 +18,15 @@ def get_text_embedding(text, model, processor):
         text_embed = model.get_text_features(**inputs).cpu().numpy()
     return text_embed
 
-def get_audio_embedding(file_path, model, processor, audio_array=None, sample_rate=None):
-    if file_path:
+def get_audio_embedding(file_path, model, processor, audio_array=None, sample_rate=None, audio_bytes=None):
+    if audio_bytes:
+        audio_array, sample_rate = sf.read(io.BytesIO(audio_bytes))
+    elif file_path:
         audio_array, sample_rate = sf.read(file_path)
     elif audio_array is not None and sample_rate is not None:
         pass
     else:
-        raise ValueError("Either file_path or both audio_array and sample_rate must be provided")
+        raise ValueError("Either file_path, audio_bytes, or both audio_array and sample_rate must be provided")
 
     # Resample to 48kHz if necessary and ensure float32 type
     audio_tensor = torch.tensor(audio_array, dtype=torch.float32).unsqueeze(0)  # Convert to float32 tensor

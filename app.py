@@ -39,7 +39,7 @@ if st.button("Search"):
         # Process the uploaded audio file
         st.audio(uploaded_file)
         audio_bytes = uploaded_file.read()
-        embedding = get_audio_embedding(audio_bytes, model, processor)
+        embedding = get_audio_embedding(None, model, processor, audio_bytes=audio_bytes)
     elif query_text:
         # Process the text query
         embedding = get_text_embedding(query_text, model, processor)
