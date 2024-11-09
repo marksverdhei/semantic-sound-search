@@ -5,4 +5,4 @@ This repository is under ✨`MIT License`✨
 
 Recommended `python` version: `3.10` (must use faiss-cpu for versions above `3.10`)
 
-- [ ] Milestone 1: Working streamlit application for searching in database
+- [X] Milestone 1: Working streamlit application for searching in database
